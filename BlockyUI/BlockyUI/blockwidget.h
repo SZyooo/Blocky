@@ -10,21 +10,32 @@ class InputWidget;
 using std::vector;
 using std::pair;
 
-enum class AREA{IN_LIST,IN_EDITOR};
+QColor FetchAColor();
+
+
 class BlockWidget : public QWidget
 {
     Q_OBJECT
 public:
-    BlockWidget(QString op,QString des,const vector<QString>& params,AREA area = AREA::IN_LIST);
+    BlockWidget(QString op,QString des,const vector<QString>& params,QColor color = FetchAColor());
+    BlockWidget(const BlockWidget& bw);
     void paintEvent(QPaintEvent *event);
+    QColor GetBackgoundColor() const;
+public slots:
+    void Resize();
+    void SelectVar();
+    void InputVal(const QString&s);
+
 private:
     QLabel* _operation_label;
     QString _op_name;
     QString _toolTip;
     vector<pair<QLabel*,InputWidget*>> _params;
+    vector<bool> _is_var;
+    vector<QString> _values;
     enum{FONTSIZE = 10,EDGE = 5,SPACE = 6};
-    AREA _area;
     int mid;
+    QColor _color;
 };
 
 #endif // BLOCKWIDGET_H

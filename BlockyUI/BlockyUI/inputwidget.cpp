@@ -5,9 +5,9 @@
 #include <QFontMetrics>
 #include "tool.h"
 #include <QLabel>
-InputWidget::InputWidget(const vector<QString> &variable_names)
-    :_choises(variable_names),_input(new QLineEdit(this)),_combobox(new QComboBox(this)),
-      _input_wid_changed(false),_customized_value(true)
+InputWidget::InputWidget()
+    :_input(new QLineEdit(this)),_combobox(new QComboBox(this)),
+      _customized_value(true)
 {
     _value = "";
 
@@ -17,22 +17,14 @@ InputWidget::InputWidget(const vector<QString> &variable_names)
     _combobox->setFont(font);
     _combobox->stackUnder(_input);
     _combobox->addItem("(Type)");
+    _combobox->addItem("(Refresh)");
 
-    QString longest_str = "(Type)";
-    for(int i=0;i<variable_names.size();i++){
-        _combobox->addItem(variable_names[i]);
-        if(variable_names[i].length() > longest_str.length())
-            longest_str = variable_names[i];
+    for(int i=0;i<InputWidget::Choices.size();i++){
+        _combobox->addItem(InputWidget::Choices[i]);
     }
 
-    QSize size = QFontMetrics(font).boundingRect(longest_str).size();
-    _dropbox_width = size.width() + DROP_ICON_SIZE;
-    _input_width = (int)(_dropbox_width * 0.8f);
-    _combobox->resize(_dropbox_width,size.height());
-    _input->resize(_input_width,size.height());
-    _combobox->move(0,0);
-    _input->move(0,0);
-    this->resize(_combobox->size());
+    UpdateSize();
+
     connect(_input,&QLineEdit::textChanged,this,&InputWidget::InputValue);
     connect(_input,&QLineEdit::editingFinished,this,&InputWidget::SetValueFinished);
     connect(_combobox,&QComboBox::activated,this,&InputWidget::SelectVariable);
@@ -40,38 +32,62 @@ InputWidget::InputWidget(const vector<QString> &variable_names)
 
 void InputWidget::AddVariable(QString variable_name)
 {
-    _combobox->addItem(variable_name);
+    InputWidget::Choices.push_back(variable_name);
 }
 
 void InputWidget::RemoveVariable(QString variable_name)
 {
-    int idx = _combobox->findText(variable_name);
-    if(idx!=-1)
-    {
-         _combobox->removeItem(idx);
+    auto it = InputWidget::Choices.begin();
+    while(*it!=variable_name)
+        it++;
+    if(it!=InputWidget::Choices.end()){
+        InputWidget::Choices.erase(it);
     }
+}
+
+void InputWidget::UpdateComboBox()
+{
+    _combobox->clear();
+    _combobox->addItem("(Type)");
+    _combobox->addItem("(Refresh)");
+    for(int i=0;i<InputWidget::Choices.size();i++){
+        _combobox->addItem(InputWidget::Choices[i]);
+    }
+    UpdateSize();
+}
+
+void InputWidget::UpdateSize()
+{
+    QString longest_str = "(Refresh)";
+    for(int i=0;i<InputWidget::Choices.size();i++){
+        if(InputWidget::Choices[i].length() > longest_str.length())
+            longest_str = InputWidget::Choices[i];
+    }
+    QFont font;
+    font.setPointSize(15);
+    QSize size = QFontMetrics(font).boundingRect(longest_str).size();
+    int _dropbox_width = size.width() + DROP_ICON_SIZE;
+    int _input_width = size.width();
+    _combobox->resize(_dropbox_width,size.height());
+    _input->resize(_input_width,size.height());
+    _combobox->move(0,0);
+    _input->move(0,0);
+    this->resize(_combobox->size());
+}
+
+void InputWidget::SetValue(QString s)
+{
+    _input->setText(s);
 }
 
 void InputWidget::InputValue(const QString &s)
 {
     int new_width = QFontMetrics(_input->font()).boundingRect(s).width();
-    if(new_width > _input_width){
+    if(new_width > _input->width()){
         _input->resize(new_width,_input->height());
-        //_input->move(0,0);
         _combobox->resize(new_width+DROP_ICON_SIZE,_combobox->height());
-        //_combobox->move(0,0);
         this->resize(_combobox->size());
         emit Resize();
-        _input_wid_changed = true;
-    }
-    else{
-        if(_input_wid_changed){
-            _input->resize(_input_width,_input->height());
-            _combobox->resize(_dropbox_width,_combobox->height());
-            _input_wid_changed = false;
-            this->resize(_combobox->size());
-            emit Resize();
-        }
     }
 }
 
@@ -82,14 +98,24 @@ void InputWidget::SelectVariable(int idx)
         _input->setText("");
         _customized_value = true;
     }
+    else if(idx == 1){
+        UpdateComboBox();
+    }
     else{
         _input->setText(_combobox->itemText(idx));
         _input->setEnabled(false);
         _customized_value = false;
+        QString txt = _combobox->itemText(idx);
+        emit ChooseVar(txt);
     }
 }
 
 void InputWidget::SetValueFinished()
 {
     _value = _input->text();
+    QString txt = _input->text();
+    emit InputVal(txt);
 }
+
+
+std::vector<QString> InputWidget::Choices;

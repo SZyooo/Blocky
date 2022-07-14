@@ -7,7 +7,10 @@ class QString;
 void Debug(QString s);
 class QWidget;
 class QColor;
-void ChangeBKG(QWidget* w, QColor* c);
+void ChangeBKG(QWidget* w, QColor c);
+void SetRadius(QWidget* w, int pix);
 
-
+void TurnOnShadowEffect(QWidget * w);
+void TurnOffShadowEffect(QWidget* w);
+QColor FetchAColor();
 #endif // TOOL_H

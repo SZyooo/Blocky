@@ -1,14 +1,11 @@
 #include "editwindow.h"
-#include "blockwidget.h"
-
 
 #include <QApplication>
-
+#include "segmentcontainerwidget.h"
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    BlockWidget bw("Add","Add two number",{"n1"});
-    bw.show();
-
+    SegmentContainerWidget scw;
+    scw.show();
     return a.exec();
 }

@@ -11,16 +11,28 @@ CONFIG += c++11
 SOURCES += \
     blockwidget.cpp \
     commonvalue.cpp \
+    conditionwidget.cpp \
+    editwidget.cpp \
     inputwidget.cpp \
+    lbwidget.cpp \
+    legowidget.cpp \
+    loopsegmentwidget.cpp \
     main.cpp \
     editwindow.cpp \
+    segmentcontainerwidget.cpp \
     tool.cpp
 
 HEADERS += \
     blockwidget.h \
     commonvalue.h \
+    conditionwidget.h \
+    editwidget.h \
     editwindow.h \
     inputwidget.h \
+    lbwidget.h \
+    legowidget.h \
+    loopsegmentwidget.h \
+    segmentcontainerwidget.h \
     tool.h
 
 # Default rules for deployment.
