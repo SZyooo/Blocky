@@ -7,6 +7,7 @@ LegoWidget::LegoWidget(const BlockWidget& pbw)
 {
     LegoWidget* lw = new LegoWidget;
     BlockWidget *bw = new BlockWidget(pbw);
+    bw->SetAcceptDrag(false);
     bw->setParent(lw);
     bw->move(0,0);
     lw->resize(bw->size());
@@ -15,9 +16,9 @@ LegoWidget::LegoWidget(const BlockWidget& pbw)
     lw->move(0,0);
     resize(lw->size());
     lw->move(0,0);
-    setAcceptDrops(true);
     ChangeBKG(&_placeholder,Qt::gray);
     DisablePlaceholder();
+
 }
 
 QColor LegoWidget::GetColor()

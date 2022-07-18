@@ -92,11 +92,9 @@ void SegmentContainerWidget::resizeEvent(QResizeEvent *e)
 bool SegmentContainerWidget::eventFilter(QObject *o, QEvent *e)
 {
     if(e->type() == QEvent::HoverMove){
-        QHoverEvent* he = static_cast<QHoverEvent*>(e);
-        int x = (int)he->position().x();
-        int y = (int)he->position().y();
+        int x = _inner_widget.MousePos().x();
+        int y = _inner_widget.MousePos().y();
         int idx = GetSegmentIndexByMouseLocalPos(x,y);
-        Debug(QString::number(idx));
         _delBtn_hovering = idx;
         if(idx != -1){
             ShowDelButtonAt(idx);
@@ -110,9 +108,9 @@ bool SegmentContainerWidget::eventFilter(QObject *o, QEvent *e)
 
 void SegmentContainerWidget::ShowDelButtonAt(int idx)
 {
-    EnableDelButton();
     int x = _segments[idx]->x() + _segments[idx]->width() - DELBUTTON_WIDTH;
-    int y = 0;
+    int y = _segments[idx]->y();
+    EnableDelButton();
     _del_button.move(x,y);
 }
 

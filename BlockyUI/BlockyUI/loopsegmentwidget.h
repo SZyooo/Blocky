@@ -6,6 +6,7 @@
 using std::vector;
 class EditWidget;
 class QPushButton;
+class InnerWidget;
 class LoopSegmentWidget : public QScrollArea
 {
     Q_OBJECT
@@ -23,7 +24,7 @@ private:
     void ActivateRemoveBtn(int x, int y);
     void DisabledRemoveBtn();
     void Resize();
-    QWidget* _inner_widget;
+    InnerWidget* _inner_widget;
     vector<EditWidget*> _edit_widgets;
     QPushButton* _add_button;
     QPushButton* _remove_button;

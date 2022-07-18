@@ -27,6 +27,11 @@ public:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent* event);
+    void dragLeaveEvent(QDragLeaveEvent* e);
+    void dropEvent(QDropEvent *event);
 public slots:
     void HorizontalMove(int val);
     void VerticleMove(int val);
@@ -37,6 +42,8 @@ protected:
     void UpdateVisibleRect();
     void MoveBlocks(int x, int y,LegoWidget* lw);
 private:
+    void EnablePlaceHolder(int x, int y, QSize size);
+    void DisablePlaceHolder();
     void StopHovering();
     ConditionWidget* _conditionWidget;
     QScrollBar* _vBar,*_hBar;
@@ -48,6 +55,7 @@ private:
     enum {LEFT,RIGHT,NONE} _clicked_button;
     QPoint _click_offset;
     int _hovering_block;
+    QWidget* _placeholder_widget;
 };
 
 #endif // EDITWIDGET_H

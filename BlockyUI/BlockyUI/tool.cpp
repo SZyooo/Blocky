@@ -44,6 +44,7 @@ void TurnOffShadowEffect(QWidget *w)
 void SetRadius(QWidget *w, int pix)
 {
     w->setStyleSheet(QString("{border-top-left-radius:%1 px}").arg(pix));
+    Debug(w->styleSheet());
 }
 
 
@@ -52,4 +53,9 @@ QColor FetchAColor()
     static int idx = 0;
     size_t size = RandomColors.size();
     return RandomColors[(idx++)%size];
+}
+
+void AddRadius(QWidget *w, int value)
+{
+    w->styleSheet().append(QString("QWidget{border-radius:%1 px;}").arg(value));
 }

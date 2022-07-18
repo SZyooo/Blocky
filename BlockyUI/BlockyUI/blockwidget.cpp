@@ -8,9 +8,13 @@
 #include "inputwidget.h"
 #include "tool.h"
 #include "commonvalue.h"
+#include <QMouseEvent>
+#include <QDrag>
+#include "blockmimedata.h"
 
 BlockWidget::BlockWidget(QString op, QString des, const vector<QString> &params, QColor color)
-    :_operation_label(new QLabel(this)),_op_name(op),_toolTip(des),_color(color)
+    :_operation_label(new QLabel(this)),_op_name(op),_toolTip(des),_color(color),
+      _params_str(params)
 {
     int wid = EDGE,hei = 0;
     mid = 0;
@@ -36,15 +40,16 @@ BlockWidget::BlockWidget(QString op, QString des, const vector<QString> &params,
         wid += s.width() + 2;
         iw->move(wid,EDGE);
         wid += iw->width() + SPACE;
-        this->_params.push_back({label,iw});
+        _params.push_back({label,iw});
     }
     hei += 2*EDGE;
     mid = hei / 2;
     Resize();
     ChangeBKG(this,_color);
-    this->setMouseTracking(true);
-    this->setToolTip(_toolTip);
-    SetRadius(this,15);
+    setMouseTracking(true);
+    setToolTip(_toolTip);
+    _pressed = false;
+    _accept_drag = true;
 }
 
 BlockWidget::BlockWidget(const BlockWidget &bw)
@@ -69,6 +74,8 @@ BlockWidget::BlockWidget(const BlockWidget &bw)
     ChangeBKG(this,_color);
     this->setMouseTracking(true);
     this->setToolTip(_toolTip);
+    _pressed = false;
+    _accept_drag = true;
 }
 
 void BlockWidget::paintEvent(QPaintEvent *event)
@@ -87,6 +94,47 @@ void BlockWidget::paintEvent(QPaintEvent *event)
 QColor BlockWidget::GetBackgoundColor() const
 {
     return _color;
+}
+
+void BlockWidget::SetAcceptDrag(bool draggable)
+{
+    _accept_drag = draggable;
+}
+
+void BlockWidget::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton && _accept_drag){
+        _press_pos.setX((int)e->position().x());
+        _press_pos.setY((int)e->position().y());
+        _pressed = true;
+    }
+    return QWidget::mousePressEvent(e);
+}
+
+void BlockWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if(_pressed && _accept_drag){
+        int x = (int)event->position().x();
+        int y = (int)event->position().y();
+        QPoint pos(x,y);
+        int move_dis = (pos - _press_pos).manhattanLength();
+        if(move_dis > DRAG_THRESHOLD){
+            QDrag* drag = new QDrag(this);
+            BlockMimeData* mimeData = new BlockMimeData(_op_name,_toolTip,_params_str);
+            drag->setMimeData(mimeData);
+            drag->exec();
+        }
+    }
+
+    return QWidget::mousePressEvent(event);
+}
+
+void BlockWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton){
+        _pressed = false;
+    }
+    return QWidget::mouseReleaseEvent(e);
 }
 
 void BlockWidget::Resize()

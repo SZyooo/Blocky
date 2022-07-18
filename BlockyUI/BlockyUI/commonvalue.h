@@ -10,4 +10,5 @@ extern QColor SEGMENT_BKG;
 using std::vector;
 extern vector<QColor> RandomColors;
 enum RELATION{LESSTHAN = 0,GREATERTHAN,LESSEQUAL,GREATEREQUAL,EQUAL,NOTEQUAL};
+extern QColor VARIABLE_COLOR;
 #endif // COMMONVALUE_H

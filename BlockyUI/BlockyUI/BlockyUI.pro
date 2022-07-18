@@ -9,10 +9,15 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    addvariabledialog.cpp \
+    blockbox.cpp \
+    blocklistwidget.cpp \
+    blockmimedata.cpp \
     blockwidget.cpp \
     commonvalue.cpp \
     conditionwidget.cpp \
     editwidget.cpp \
+    innerwidget.cpp \
     inputwidget.cpp \
     lbwidget.cpp \
     legowidget.cpp \
@@ -20,20 +25,29 @@ SOURCES += \
     main.cpp \
     editwindow.cpp \
     segmentcontainerwidget.cpp \
-    tool.cpp
+    tool.cpp \
+    variablelist.cpp \
+    variablewidget.cpp
 
 HEADERS += \
+    addvariabledialog.h \
+    blockbox.h \
+    blocklistwidget.h \
+    blockmimedata.h \
     blockwidget.h \
     commonvalue.h \
     conditionwidget.h \
     editwidget.h \
     editwindow.h \
+    innerwidget.h \
     inputwidget.h \
     lbwidget.h \
     legowidget.h \
     loopsegmentwidget.h \
     segmentcontainerwidget.h \
-    tool.h
+    tool.h \
+    variablelist.h \
+    variablewidget.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

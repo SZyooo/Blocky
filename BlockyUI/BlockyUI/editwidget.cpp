@@ -7,11 +7,16 @@
 #include <QPoint>
 #include <QMouseEvent>
 #include "tool.h"
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include "blockmimedata.h"
+#include <QSize>
 
 EditWidget::EditWidget()
     :_conditionWidget(new ConditionWidget),
       _vBar(new QScrollBar(Qt::Vertical,this)),_hBar(new QScrollBar(Qt::Horizontal,this)),_chosenBlock(-1)
-    ,_hovering_block(-1)
+    ,_hovering_block(-1),_placeholder_widget(new QWidget(this))
 {
     _conditionWidget->move(0,0);
     _conditionWidget->setParent(this);
@@ -27,6 +32,8 @@ EditWidget::EditWidget()
     connect(_hBar,&QScrollBar::sliderMoved,this,&EditWidget::HorizontalMove);
     ResetBar();
     _clider = -1;
+    setAcceptDrops(true);
+    TurnOnShadowEffect(this);
 }
 
 void EditWidget::resizeEvent(QResizeEvent *)
@@ -37,13 +44,7 @@ void EditWidget::resizeEvent(QResizeEvent *)
 void EditWidget::AddBlock(const BlockWidget &bw,int x,int y)
 {
     LegoWidget* lw = new LegoWidget(bw);
-    lw->setParent(this);
-    _conditionWidget->raise();
-    _vBar->raise();
-    _hBar->raise();
-    lw->move(x,y);
-    connect(lw,&LegoWidget::DragMove,this,&EditWidget::IntersectDetect);
-    this->_legos.push_back(lw);
+    AddBlock(lw,x,y);
 }
 
 void EditWidget::AddBlock(LegoWidget *lw,int x, int y)
@@ -175,6 +176,49 @@ void EditWidget::mouseReleaseEvent(QMouseEvent *event)
     return QWidget::mouseReleaseEvent(event);
 }
 
+void EditWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    const BlockMimeData * blockMimeData = dynamic_cast<const BlockMimeData*>(event->mimeData());
+    if(blockMimeData!=nullptr){
+        int x = (int)event->position().x();
+        int y = (int)event->position().y();
+        const BlockWidget* bw = blockMimeData->GetBlock();
+        EnablePlaceHolder(x,y,bw->size());
+        event->acceptProposedAction();
+    }
+}
+
+void EditWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    const BlockMimeData * blockMimeData = dynamic_cast<const BlockMimeData*>(event->mimeData());
+    if(blockMimeData!=nullptr){
+        int x = (int)event->position().x();
+        int y = (int)event->position().y();
+        const BlockWidget* bw = blockMimeData->GetBlock();
+        EnablePlaceHolder(x,y,bw->size());
+        event->acceptProposedAction();
+    }
+}
+
+void EditWidget::dragLeaveEvent(QDragLeaveEvent *e)
+{
+    DisablePlaceHolder();
+}
+
+void EditWidget::dropEvent(QDropEvent *event)
+{
+    const BlockMimeData * blockMimeData = dynamic_cast<const BlockMimeData*>(event->mimeData());
+    if(blockMimeData!=nullptr){
+        int x = (int)event->position().x();
+        int y = (int)event->position().y();
+        const BlockWidget* bw = blockMimeData->GetBlock();
+        AddBlock(*bw,x,y);
+        DisablePlaceHolder();
+        event->acceptProposedAction();
+    }
+}
+
+
 void EditWidget::HorizontalMove(int val)
 {
     int ox = _visibleSpace.x();
@@ -262,6 +306,18 @@ void EditWidget::MoveBlocks(int x, int y,LegoWidget* lw)
         StopHovering();
     }
     UpdateVisibleRect();
+}
+
+void EditWidget::DisablePlaceHolder()
+{
+    _placeholder_widget->close();
+}
+
+void EditWidget::EnablePlaceHolder(int x,int y, QSize size)
+{
+    _placeholder_widget->show();
+    ChangeBKG(_placeholder_widget,Qt::gray);
+    _placeholder_widget->setGeometry(x,y,size.width(),size.height());
 }
 
 void EditWidget::StopHovering()

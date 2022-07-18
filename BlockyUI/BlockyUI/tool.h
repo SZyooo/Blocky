@@ -9,6 +9,7 @@ class QWidget;
 class QColor;
 void ChangeBKG(QWidget* w, QColor c);
 void SetRadius(QWidget* w, int pix);
+void AddRadius(QWidget* w,int value);
 
 void TurnOnShadowEffect(QWidget * w);
 void TurnOffShadowEffect(QWidget* w);

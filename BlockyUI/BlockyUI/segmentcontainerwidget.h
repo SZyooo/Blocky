@@ -4,6 +4,7 @@
 #include <QScrollArea>
 #include <vector>
 #include <QPushButton>
+#include <innerwidget.h>
 using std::vector;
 
 class LoopSegmentWidget;
@@ -24,10 +25,10 @@ private:
     enum{ADDBUTTON_WIDTH = 80,ADDBUTTON_HEIGHT = 80};
     QPushButton _del_button;
     enum{DELBUTTON_WIDTH = 40,DELBUTTON_HEIGHT = 40};
-    QWidget _inner_widget;
-    enum{EDGE = 5,SPACING = 6};
+    InnerWidget _inner_widget;
+    enum{EDGE = 5,SPACING = 20};
     void ShowDelButtonAt(int idx);
-    int GetSegmentIndexByMouseLocalPos(int x,int y);
+    int GetSegmentIndexByMouseLocalPos(int x, int y);
     void DisableDelButton();
     void EnableDelButton();
     int _delBtn_hovering;

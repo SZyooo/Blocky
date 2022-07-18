@@ -5,15 +5,15 @@
 #include <QEvent>
 #include <QHoverEvent>
 #include "tool.h"
-
+#include "innerwidget.h"
 LoopSegmentWidget::LoopSegmentWidget()
-    :_add_button(new QPushButton),_inner_widget(new QWidget),_remove_button(new QPushButton)
+    :_add_button(new QPushButton),_inner_widget(new InnerWidget),_remove_button(new QPushButton)
     ,_del_btn_hovering_wgt(-1)
 {
     _add_button->setParent(_inner_widget);
     _add_button->setText("--ADD--");
     _remove_button->setText("X");
-    _remove_button->setParent(this);
+    _remove_button->setParent(_inner_widget);
     _remove_button->resize(DELBUTTON_WIDTH,DELBUTTON_HEIGHT);
     DisabledRemoveBtn();
     setWidget(_inner_widget);
@@ -46,10 +46,9 @@ void LoopSegmentWidget::AddBranch()
 bool LoopSegmentWidget::eventFilter(QObject *o, QEvent * e)
 {
     if(e->type() == QEvent::HoverMove){
-        QHoverEvent* he = static_cast<QHoverEvent*>(e);
-        int ex = (int)he->position().x();
-        int ey = (int)he->position().y();
         bool flag = false;
+        int ex = _inner_widget->MousePos().x();
+        int ey = _inner_widget->MousePos().y();
         for(int i=0;i<_edit_widgets.size();i++){
             if(_edit_widgets[i]->geometry().contains(ex,ey)){
                 int x = _edit_widgets[i]->x()+_edit_widgets[i]->width()-DELBUTTON_WIDTH;
@@ -78,6 +77,7 @@ void LoopSegmentWidget::ActivateRemoveBtn(int x,int y)
 {
     _remove_button->setEnabled(true);
     _remove_button->setVisible(true);
+    _remove_button->raise();
     _remove_button->move(x,y);
 }
 

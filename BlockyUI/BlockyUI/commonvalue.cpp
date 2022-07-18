@@ -29,3 +29,4 @@ vector<QColor> RandomColors={
 
 QColor EDIT_WIDGET_BKG = QColor("#CDB5CD");
 QColor SEGMENT_BKG = QColor("#7A8B8B");
+QColor VARIABLE_COLOR("#4be7aa");
